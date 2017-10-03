@@ -2,8 +2,10 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    //Perform screenshot
     string command = "/usr/sbin/screencapture -m -x " + ofFilePath::getAbsolutePath( ofToDataPath("")) + "tmp.png";
     system(command.c_str());
+    //Load resources in from data folder
     desktop.load(ofFilePath::getAbsolutePath( ofToDataPath("")) + "tmp.png" );
     cursor.load(ofFilePath::getAbsolutePath( ofToDataPath("")) + "Cursor.png" );
     b1.load(ofFilePath::getAbsolutePath( ofToDataPath("")) + "b.wav");
@@ -16,7 +18,8 @@ void ofApp::setup(){
     soS.load(ofFilePath::getAbsolutePath( ofToDataPath("")) + "soS.wav");
     laS.load(ofFilePath::getAbsolutePath( ofToDataPath("")) + "laS.wav");
     xiS.load(ofFilePath::getAbsolutePath( ofToDataPath("")) + "xiS.wav");
-//    b4.load(ofFilePath::getAbsolutePath( ofToDataPath("")) + "b4.wav");
+    
+    //Setup
     dpixel = desktop.getPixels();
     CGDisplayHideCursor(kCGDirectMainDisplay);
     cursX = ofGetWindowWidth()/2;
@@ -36,12 +39,14 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    //update animated vars
     imgZoom.update(1.0f/60.0f);
     vertEnlong.update(1.0f/60.0f);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    //If it is within first 4 DRAGs. Try to capture the interval between DRAGs.
     if(initial!=0 && determined!=4){
         if(initial<480){
             initial++;
@@ -51,13 +56,16 @@ void ofApp::draw(){
             determined = 0;
         }
     }
+    //If complete first 4 DRAGs, the rhythm should in.
     if(determined==4){
         if(beatCounter==0){
+            //Use beat counter as a timer to trigger beats
             //play beat
             beatCounter++;
         }
         else{
             if(beatCounter%rythm==0){
+                //Play rhythm according to different bpm
                 if(ryN==0 && rythm == 33){
                     b1.play();
                 }
@@ -67,19 +75,13 @@ void ofApp::draw(){
                 else if(ryN==0 && rythm == 120){
                     b3.play();
                 }
-//                else if(ryN==1){
-//                    b2.play();
-//                }
-//                else if(ryN==2){
-//                    b3.play();
-//                }
-//                else if(ryN==3){
-//                    b4.play();
-//                }
+                
+                //Make the screen 'heart beat' with rhythm
                 imgZoom.setRepeatType(LOOP_BACK_AND_FORTH_ONCE);
                 imgZoom.setDuration(0.1);
                 imgZoom.animateTo(100);
                 if(ryN<3){
+                    //We use a 4/4 beat system here
                     ryN++;
                 }
                 else{
@@ -91,6 +93,7 @@ void ofApp::draw(){
     }
     
     if (mode == "DESKTOP"){
+        //Display cursor and desktop screenshot
         deltaWidth = imgZoom;
         deltaHeight = (float(imgZoom) / ofGetWindowWidth() * ofGetWindowHeight());
         xComp = relativePosX * ofGetWindowWidth() - (relativePosX * (ofGetWindowWidth()+deltaWidth) - (deltaWidth)/2.0f);
@@ -104,8 +107,9 @@ void ofApp::draw(){
         }
     }
     else if (mode == "PLAYING"){
-        //display circle
+        //display circles
         
+        //direction: true = left to right, false = right to left
         if (direction == true) {
             for (int i=0; i<colors.size(); i++) {
                 float x = screenSpaceX + i*screenSpaceDist;
@@ -133,6 +137,7 @@ void ofApp::draw(){
         if (step<colors.size()) {
             if(beatCounter%rythm==0){
                 step++;
+                //Play a note according to the color
                 float note = (colors[step].r+colors[step].g+colors[step].b)/3.0f;
                 float per = 255.0f/7.0f;
                 if (note < per){
@@ -161,6 +166,7 @@ void ofApp::draw(){
             }
             if(beatCounter%rythm<=rythm/2){
                 float x;
+       
                 ofColor compensate;
                 if(direction == true){
                     x = screenSpaceX + (step)*screenSpaceDist - screenSpaceDist/3.0f;
@@ -177,6 +183,7 @@ void ofApp::draw(){
                     compensate.g = 255.0f - colors[colors.size()-step].g;
                     compensate.b = 255.0f - colors[colors.size()-step].b;
                 }
+                
                 ofDrawRectangle(x, 0, screenSpaceDist/3.0f*2.0f, vertEnlong);
                 //ofDrawRectangle(0, 0, ofGetScreenWidth(), ofGetWindowHeight()-float(vertEnlong));
             }
