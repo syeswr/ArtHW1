@@ -5,4 +5,5 @@ Yihao Zhu
 - When rhythm is in. Drag mouse on some color to start a generated sound
 - Use a,s,d,f,g to manully play a sound correspond to left most five colors.
 - Requires ofxAnimatable at https://github.com/armadillu/ofxAnimatable
+- All assets from apple's garage band. Copyright to Apple.
 
